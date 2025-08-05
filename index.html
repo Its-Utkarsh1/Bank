@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="functions.js"></script>
+
+    <script>
+
+        $(function () {
+
+            //When page loads Create Account also loads.
+            $("#btnCreate").ready(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'createAccount.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            });
+
+            // Load the create account form when the Create Account button is clicked
+            $("#btnCreate").click(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'createAccount.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            })
+
+            // Load the deposit form when the Deposit button is clicked
+            $("#btnDeposit").click(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'Deposit.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            })
+
+            // Load the withdraw form when the Withdraw button is clicked
+            $("#btnWithdraw").click(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'Withdraw.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            })
+
+            // Load the balance check form when the Balance button is clicked
+            $("#btnBalance").click(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'Balance.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            })
+
+            // Load the EMI calculation form when the EMI Calculation button is clicked
+            $("#btnEmi").click(async function () {
+                await $.ajax({
+                    method: 'GET',
+                    url: 'EMI.html'
+                }).then(function (data) {
+                    $("#bankBody").html(data);
+                });
+            })
+
+            //Create account info.
+
+            $(document).on("click", "#createClick", async function () {
+
+                var Name = $("#lblCreateName").val();
+                var Email = $("#lblCreateEmail").val();
+                var Phone = $("#lblCreateNumber").val();
+                var Deposit = $("#lblCreateDeposit").val();
+                var Pin = $("#lblCreatePin").val();
+
+                //Checking Conditions
+
+                // Validate Name
+                if (!validateName(Name)) {
+                    $("#txtCreateName").html("Name should contain only letters.");
+                } else {
+                    $("#txtCreateName").html("");
+                }
+
+                //Validate Email
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email)) {
+                    $("#txtCreateEmail").html("Invalid email format.");
+                    return;
+                } else {
+                    $("#txtCreateEmail").html("");
+                }
+
+                // Validate Phone Number
+                if (!/^\d{10}$/.test(Phone)) {
+                    $("#txtCreatePhone").html("Phone number must be exactly 10 digits.");
+                    return;
+                } else {
+                    $("#txtCreatePhone").html("");
+                }
+
+                // Validate Deposit Amount
+                if (!validateDeposit(Deposit)) {
+                    $("#txtCreateAmt").html("Deposit must be between ₹1,000 and ₹10,00,000.");
+                    return;
+                } else {
+                    $("#txtCreateAmt").html("");
+                }
+
+                // Validate PIN
+                if (!validatePin(Pin)) {
+                    $("#txtCreatePin").html("PIN must be a 4-digit number.");
+                    return;
+                } else {
+                    $("#txtCreatePin").html("");
+                }
+                const clientData = {
+                    Name: $("#lblCreateName").val(),
+                    Email: $("#lblCreateEmail").val(),
+                    Phone: $("#lblCreateNumber").val(),
+                    Deposit: $("#lblCreateDeposit").val(),
+                    Pin: $("#lblCreatePin").val()
+                }
+
+                await $.ajax({
+                    method: 'POST',
+                    url: 'http://127.0.0.1:8001/createAccount',
+                    data: clientData
+                }).then(function (res) {
+                    alert(res);
+                }).catch(function () {
+                    alert("Error creating account. Please try again.");
+                });
+            })
+
+            //Validate Account
+            async function validateAccount(acc) {
+                try {
+                    const response = await $.ajax({
+                        method: 'POST',
+                        url: 'http://127.0.0.1:8001/accountValid',
+                        data: JSON.stringify({ acc: acc }), 
+                        contentType: 'application/json'
+                    });
+
+                    return response; // { found: true, balance: ... } or { found: false }
+                } catch (error) {
+                    console.error("Error validating account:", error);
+                    return { found: false, error: true };
+                }
+            }
+            //validate PIN
+            async function validatePin(pin) {
+                try {
+                    const response = await $.ajax({
+                        method: 'POST',
+                        url: 'http://127.0.0.1:8001/validPin',
+                        data: pin
+                    });
+                    return response;
+                } catch (error) {
+                    console.error("Error validating Pin:", error);
+                    return { found: false, error: true };
+                }
+            }
+
+
+            // Deposit money
+
+            $(document).on("click", "#depositClick", async function () {
+
+                const acc = parseInt($("#lblDepositAccount").val());
+                const pin = $("#lblDepositPin").val();
+                const deposit = parseFloat($("#lblDepositAmount").val());
+
+                // Checking Account Validity
+                const isvalidAccount = await validateAccount(acc);
+                if (!isvalidAccount.found) {
+                    $("#txtDepositAccount").html("Account not found. Please create your account");
+                    return;
+                } else {
+                    $("#txtDepositAccount").html("");
+                }
+
+                //Checking Pin Validity
+                const isvalidPin = await validatePin(pin);
+                if (!isvalidPin.found) {
+                    $("#txtDepositPin").html("Wrong Pin");
+                    return;
+                } else {
+                    $("#txtDepositPin").html("");
+                }
+
+
+                const isvalidDeposit = await validateDeposit(deposit);
+                if (!isvalidDeposit) {
+                    $("#txtDepositAmt").html("Please enter a valid deposit amount.");
+                    return;
+                } else {
+                    $("#txtDepositAmt").html("");
+                }
+
+
+
+                //Update Balance
+                const currentBalance = parseFloat(result.Balance);
+                const updatedBalance = currentBalance + deposit;
+
+                const Data = {
+                    accNumber: acc,
+                    pinNumber: pin,
+                    balance: updatedBalance
+                }
+                $.ajax({
+                    method: 'PUT',
+                    url: 'http://127.0.0.1:8001/Deposit',
+                    data: Data
+                }).then(function (res) {
+                    alert(res);
+                }).catch(function () {
+                    alert("Error depositing money. Please try again later.");
+                });
+            })
+        })
+
+    </script>
+
+</head>
+
+<body>
+    <div class="w-75 container-fluid mb-5">
+        <div id="section1" class=" mt-5">
+            <h1>Simple Banking System</h1>
+            <p>Your money, your future — safe, simple, and smart</p>
+        </div>
+        <div class="mt-5 justify-content-between " id="tags">
+            <button id="btnCreate">Create Account</button>
+            <button id="btnDeposit">Deposit</button>
+            <button id="btnWithdraw">Withdraw</button>
+            <button id="btnBalance">Balance</button>
+            <button id="btnEmi">EMI Calculation</button>
+        </div>
+        <div id="bankBody">
+
+        </div>
+    </div>
+
+</body>
+
+</html>

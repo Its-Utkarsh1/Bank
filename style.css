@@ -1,0 +1,65 @@
+ body {
+     font-family: 'Poppins', sans-serif;
+ }
+
+ #section1 {
+     height: 30vh;
+     border: 1px solid rgb(187, 187, 187);
+     background-color: rgb(113, 139, 255);
+     box-shadow: 0 0 108px rgb(197, 197, 197);
+     border-radius: 10px;
+     margin: 0 auto;
+     text-align: center;
+     color: white;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+ }
+
+ #section1 h1 {
+     font-size: 40px;
+     font-weight: 600;
+     margin-bottom: 10px;
+ }
+
+ #section1 p {
+     font-size: 16px;
+     font-weight: 400;
+     margin: 0;
+ }
+
+ #tags {
+     border: 1px solid rgb(187, 187, 187);
+     border-radius: 10px;
+     display: flex;
+     flex-wrap: wrap;
+     align-items: center;
+    height: 50px;
+ }
+
+ a {
+
+     text-decoration: none;
+ }
+
+ .cardBox {
+     box-shadow: 0 0 108px rgb(231, 231, 231);
+     border-radius: 20px;
+     border: 1px solid rgb(187, 187, 187);
+ }
+
+
+
+ input {
+     margin-bottom: 20px;
+ }
+
+ button {
+     border: none;
+     height: auto;
+     width: auto;
+     border-top-left-radius: 10px;
+     border-bottom-left-radius: 10px;
+     background-color: transparent;
+ }
