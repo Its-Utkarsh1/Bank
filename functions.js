@@ -2,8 +2,8 @@ function validateName(Name) {
     return /^[a-zA-Z\s]+$/.test(Name);
 }
 
-function validateDeposit(deposit) {
-    return (deposit && !isNaN(deposit) && deposit >= 1000 && deposit <= 1000000);
+function validateAmt(amt) {
+    return (amt && !isNaN(amt) && amt >= 1000 && amt <= 1000000);
 }
 
 function validatePin(Pin) {

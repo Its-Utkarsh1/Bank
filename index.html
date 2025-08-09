@@ -113,7 +113,7 @@
                 }
 
                 // Validate Deposit Amount
-                if (!validateDeposit(Deposit)) {
+                if (!validateAmt(Deposit)) {
                     $("#txtCreateAmt").html("Deposit must be between ₹1,000 and ₹10,00,000.");
                     return;
                 } else {
@@ -144,7 +144,7 @@
                 }).catch(function () {
                     alert("Error creating account. Please try again.");
                 });
-            })
+            });
 
             //Validate Account
             async function validateAccount(acc) {
@@ -152,7 +152,7 @@
                     const response = await $.ajax({
                         method: 'POST',
                         url: 'http://127.0.0.1:8001/accountValid',
-                        data: JSON.stringify({ acc: acc }), 
+                        data: JSON.stringify({ acc: acc }),
                         contentType: 'application/json'
                     });
 
@@ -182,12 +182,12 @@
 
             $(document).on("click", "#depositClick", async function () {
 
-                const acc = parseInt($("#lblDepositAccount").val());
+                const acc = $("#lblDepositAccount").val();
                 const pin = $("#lblDepositPin").val();
-                const deposit = parseFloat($("#lblDepositAmount").val());
+                const amt = parseFloat($("#lblDepositAmount").val());
 
                 // Checking Account Validity
-                const isvalidAccount = await validateAccount(acc);
+                var isvalidAccount = await validateAccount(acc);
                 if (!isvalidAccount.found) {
                     $("#txtDepositAccount").html("Account not found. Please create your account");
                     return;
@@ -196,7 +196,7 @@
                 }
 
                 //Checking Pin Validity
-                const isvalidPin = await validatePin(pin);
+                var isvalidPin = await validatePin(pin);
                 if (!isvalidPin.found) {
                     $("#txtDepositPin").html("Wrong Pin");
                     return;
@@ -205,15 +205,13 @@
                 }
 
 
-                const isvalidDeposit = await validateDeposit(deposit);
+                const isvalidDeposit = await validateAmt(amt);
                 if (!isvalidDeposit) {
                     $("#txtDepositAmt").html("Please enter a valid deposit amount.");
                     return;
                 } else {
                     $("#txtDepositAmt").html("");
                 }
-
-
 
                 //Update Balance
                 const currentBalance = parseFloat(result.Balance);
@@ -233,7 +231,44 @@
                 }).catch(function () {
                     alert("Error depositing money. Please try again later.");
                 });
-            })
+            });
+
+
+            // Withdraw Money
+
+            $(document).on("click", "#depositClick", async function () {
+                const acc = $("#lblWithdrawAccount").val();
+                const amt = $("#lblWithdrawAmount").val();
+                const pin = $("#lblWithdrawPin").val();
+
+
+              // Checking Account Validity
+                var isvalidAccount = await validateAccount(acc);
+                if (!isvalidAccount.found) {
+                    $("#txtWithdrawAcc").html("Account not found. Please create your account");
+                    return;
+                } else {
+                    $("#txtWithdrawAcc").html("");
+                }
+
+                // Checking Amount 
+                if (!validateAccount(amt)) {
+                    $("#txtWithdrawAmt").html("Please enter a valid withdrawl amount");
+                }
+                else {
+                    $("#txtWithdrawAmt").html("");
+                }
+
+                //Checking Pin Validity
+                var isvalidPin = await validatePin(pin);
+                if (!isvalidPin.found) {
+                    $("#txtWithdrawPin").html("Wrong Pin");
+                    return;
+                } else {
+                    $("#txtWithdrawPin").html("");
+                }
+
+            });
         })
 
     </script>
